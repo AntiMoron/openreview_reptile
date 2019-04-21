@@ -41,6 +41,6 @@ curl.get(url, params, function (e, _, body) {
         } = cur;
         const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${title}.pdf"\n`;
         return pre + sh;
-    }, '');
+    }, 'cd pdf\n');
     fs.writeFileSync(path.resolve(__dirname, "./temp.sh"), scripts);
 });

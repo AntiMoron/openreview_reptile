@@ -1,0 +1,11 @@
+cd pdf
+curl https://openreview.net/pdf/ec8ae021ee15af49b5206e847e67508a6481a7b8.pdf -o "Systematic Generalization: What Is Required and Can It Be Learned?.pdf"
+curl https://openreview.net/pdf/b7c89c850d43383e90519a89e0d3874084e94aef.pdf -o "Preferences Implicit in the State of the World.pdf"
+curl https://openreview.net/pdf/067f533050a37626120174b1ef90391a9c971614.pdf -o "Learning Particle Dynamics for Manipulating Rigid Bodies, Deformable Objects, and Fluids.pdf"
+curl https://openreview.net/pdf/9e4a1664119555f99638d384771856a4a7758ed1.pdf -o "On the Relation Between the Sharpest Directions of DNN Loss and the SGD Step Length.pdf"
+curl https://openreview.net/pdf/b980196a1b6175f85e294c1a398173ae7e38bf17.pdf -o "A Variational Inequality Perspective on Generative Adversarial Networks.pdf"
+curl https://openreview.net/pdf/933864fa625dad4f0cacd07d5d9ea5bfad36294e.pdf -o "Learning-Based Frequency Estimation Algorithms.pdf"
+curl https://openreview.net/pdf/4e1e3d38bc4b3b964c7c082acb8a434096f6fc7c.pdf -o "The Neuro-Symbolic Concept Learner: Interpreting Scenes, Words, and Sentences From Natural Supervision.pdf"
+curl https://openreview.net/pdf/f6e8fe7df20cc4a754b7463687539ddb89587db9.pdf -o "Learning to Design RNA.pdf"
+curl https://openreview.net/pdf/68574ee3fe9b6d29c7ee9be4f24488c1550b3e95.pdf -o "Learning to Learn without Forgetting by Maximizing Transfer and Minimizing Interference.pdf"
+curl https://openreview.net/pdf/0800ae54a41095791c67fc5a3a86fd9db4195137.pdf -o "A rotation-equivariant convolutional neural network model of primary visual cortex.pdf"
