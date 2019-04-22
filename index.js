@@ -161,12 +161,15 @@ getMetas(0)
             }, 'pushd pdf\n') + '\npopd\n';
             const scriptPath = path.resolve(__dirname, `./temp${i}.sh`);
             fs.writeFileSync(scriptPath, scripts);
-            const downloader = spawn(`sh ${scriptPath}`);
+            const downloader = spawn(`sh`, [scriptPath]);
             downloader.stdout.on('data', (data) => {
-                console.log(`downloader${i}:\n ${data}`);
+                console.log(`<D${i}>: ${data}`);
             });
             downloader.on('close', (code) => {
-                console.log(chalk.green(`downloader${i} finished. code ${code}`));
+                console.log(chalk.green(`<D${i}> finished. code ${code}`));
+            });
+            downloader.stderr.on('data', (data) => {
+                console.log(`<D${i}>: ${data}`);
             });
         }
 
