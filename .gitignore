@@ -3,3 +3,5 @@ node_modules/
 pdf
 *json
 *sh
+*.zip
+pdf/

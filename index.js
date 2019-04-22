@@ -156,9 +156,9 @@ getMetas(0)
                 if (!type || !pdfUrl) {
                     return pre;
                 }
-                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
+                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "pdf/${type}_${title}.pdf"\n`;
                 return pre + sh;
-            }, 'pushd pdf\n') + '\npopd\n';
+            }, '\n') + '\n\n';
             const scriptPath = path.resolve(__dirname, `./temp${i}.sh`);
             fs.writeFileSync(scriptPath, scripts);
             const downloader = spawn(`sh`, [scriptPath]);
@@ -168,8 +168,8 @@ getMetas(0)
             downloader.on('close', (code) => {
                 console.log(chalk.green(`<D${i}> finished. code ${code}`));
             });
-            downloader.stderr.on('data', (_) => {
-                // console.log(`<D${i}>: ${data}`);
+            downloader.stderr.on('data', (data) => {
+                console.log(`<D${i}>: ${data}`);
             });
         }
 
