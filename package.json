@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rm -rf temp.sh && rm -rf pdf && mkdir pdf && node ./index.js && sh ./temp.sh"
+    "start": "rm -rf temp.sh && rm -rf pdf && mkdir pdf && node ./index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
+    "child_process": "^1.0.2",
     "curl": "^0.1.4",
     "fs": "0.0.1-security",
     "path": "^0.12.7",

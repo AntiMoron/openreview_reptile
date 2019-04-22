@@ -2,7 +2,11 @@ const chalk = require('chalk');
 const curl = require('curl');
 const queryString = require('query-string');
 const fs = require('fs');
+const spawn = require('child_process').spawn;
 const path = require('path');
+
+//最大分10个进程下载
+const MAX_PROC_COUNT = 10;
 
 const dataUrl = 'https://openreview.net/notes';
 const params = {
@@ -133,18 +137,37 @@ getMetas(0)
         return getBlindSubs(1);
     })
     .then(() => {
-        // console.log(blinds, metaReviews)
-        const scripts = Object.keys(blinds).reduce((pre, cur) => {
-            const {
-                title,
-                pdfUrl,
-                type
-            } = blinds[cur] || {};
-            if (!type || !pdfUrl) {
-                return pre;
-            }
-            const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
-            return pre + sh;
-        }, 'cd pdf\n');
-        fs.writeFileSync(path.resolve(__dirname, "./temp.sh"), scripts);
+        const keys = Object.keys(blinds);
+        const tasks = [];
+        const taskCount = Math.ceil(keys.length / MAX_PROC_COUNT);
+        for (let i = 0; i < MAX_PROC_COUNT; i++) {
+            tasks.push(keys.slice(Math.floor(taskCount * i),
+                i === MAX_PROC_COUNT - 1 ? keys.length :
+                    Math.floor(taskCount * i + taskCount)));
+        }
+        for (let i = 0; i < MAX_PROC_COUNT; i++) {
+            const task = tasks[i];
+            const scripts = task.reduce((pre, cur) => {
+                const {
+                    title,
+                    pdfUrl,
+                    type
+                } = blinds[cur] || {};
+                if (!type || !pdfUrl) {
+                    return pre;
+                }
+                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
+                return pre + sh;
+            }, 'pushd pdf\n') + '\npopd\n';
+            const scriptPath = path.resolve(__dirname, `./temp${i}.sh`);
+            fs.writeFileSync(scriptPath, scripts);
+            const downloader = spawn(`sh ${scriptPath}`);
+            downloader.stdout.on('data', (data) => {
+                console.log(`downloader${i}:\n ${data}`);
+            });
+            downloader.on('close', (code) => {
+                console.log(chalk.green(`downloader${i} finished. code ${code}`));
+            });
+        }
+
     });
