@@ -99,7 +99,6 @@ const getBlindSubs = (page) => {
                     forum
                 } = article;
                 const metaReview = metaReviews[id];
-                console.log('blind', id, metaReview)
                 if (!metaReview) {
                     return;
                 }
@@ -129,6 +128,9 @@ getMetas(0)
     })
     .then(() => {
         return getBlindSubs(0);
+    })
+    .then(() => {
+        return getBlindSubs(1);
     })
     .then(() => {
         // console.log(blinds, metaReviews)
