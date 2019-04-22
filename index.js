@@ -108,7 +108,7 @@ getMetas(0, () => {
                     article.type = 'oral';
                 }
             });
-            console.log(articles);
+            // console.log(articles);
             const scripts = articles.reduce((pre, cur) => {
                 const {
                     title,
