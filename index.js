@@ -42,13 +42,13 @@ const withDrawParams = {
 const metaReviews = [];
 // 拉去meta数据
 const getMetas = (page, callback) => {
-    curl.get(dataUrl, { ...metaReviewParams, offset: page * 1000 }, (e, _, body) => {
-        console.log(chalk.green(`Page ${page} Meta Review Loaded Successfully`))
+    curl.get(`${dataUrl}?${queryString({ ...metaReviewParams, offset: page * 1000 })}`, {}, (e, _, body) => {
         if (e) {
             console.log('metareview error: \n', chalk.red(JSON.stringify(e)));
             return;
         }
-        let { notes = [] } = JSON.parse(body);
+        console.log(chalk.green(`Page ${page} Meta Review Loaded Successfully`))
+        const { notes = [] } = JSON.parse(body);
         for (let i = 0; i < notes.length; i++) {
             metaReviews.push(notes[i]);
         }
@@ -68,8 +68,7 @@ getMetas(0, () => {
                 console.log('error: \n', chalk.red(JSON.stringify(e)));
                 return;
             }
-            let { notes } = JSON.parse(body);
-            notes = notes.filter();
+            const { notes } = JSON.parse(body);
             // console.log(JSON.stringify(notes, null, 2))
             let articles = notes.map(({ content = {} }) => {
                 const {
