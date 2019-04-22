@@ -42,7 +42,7 @@ const withDrawParams = {
 const metaReviews = [];
 // 拉去meta数据
 const getMetas = (page, callback) => {
-    curl.get(`${dataUrl}?${queryString({ ...metaReviewParams, offset: page * 1000 })}`, {}, (e, _, body) => {
+    curl.get(`${dataUrl}?${queryString.stringify({ ...metaReviewParams, offset: page * 1000 })}`, {}, (e, _, body) => {
         if (e) {
             console.log('metareview error: \n', chalk.red(JSON.stringify(e)));
             return;
