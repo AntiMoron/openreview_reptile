@@ -70,11 +70,14 @@ getMetas(0, () => {
             }
             const { notes } = JSON.parse(body);
             // console.log(JSON.stringify(notes, null, 2))
-            let articles = notes.map(({ content = {} }) => {
+            let articles = notes.map((note) => {
+                const { content = {} } = note;
                 const {
                     id,
+                    forum
+                } = note;
+                const {
                     title,
-                    forum,
                     pdf: pdfUrl
                 } = content;
                 return {
@@ -105,6 +108,7 @@ getMetas(0, () => {
                     article.type = 'oral';
                 }
             });
+            console.log(articles);
             const scripts = articles.reduce((pre, cur) => {
                 const {
                     title,
