@@ -6,8 +6,8 @@ const path = require('path');
 
 const dataUrl = 'https://openreview.net/notes';
 const params = {
-    // invitation: "ICLR.cc/2019/Conference/-/Blind_Submission",
-    invitation: "ICLR.cc/2019/Conference/-/Paper.*/Meta_Review",
+    invitation: "ICLR.cc/2019/Conference/-/Blind_Submission",
+    // invitation: "ICLR.cc/2019/Conference/-/Paper.*/Meta_Review",
     // invitation: "ICLR.cc/2019/Conference/-/Withdrawn_Submission",
     // 只有blind_submission才开replyCount其他nodetails为true
     // details: "replyCount",
@@ -28,6 +28,7 @@ const metaReviewParams = {
     offset: 0,
 };
 
+// P.S. withdraw什么垃圾...
 const withDrawParams = {
     invitation: "ICLR.cc/2019/Conference/-/Withdrawn_Submission",
     // 只有blind_submission才开replyCount其他nodetails为true
@@ -39,47 +40,51 @@ const withDrawParams = {
     offset: 0,
 };
 
-const metaReviews = [];
+const metaReviews = {};
+const blinds = {};
+
 // 拉去meta数据
-const getMetas = (page, callback) => {
-    curl.get(`${dataUrl}?${queryString.stringify({ ...metaReviewParams, offset: page * 1000 })}`, {}, (e, _, body) => {
-        if (e) {
-            console.log('metareview error: \n', chalk.red(JSON.stringify(e)));
-            return;
-        }
-        console.log(chalk.green(`Page ${page} Meta Review Loaded Successfully`))
-        const { notes = [] } = JSON.parse(body);
-        for (let i = 0; i < notes.length; i++) {
-            metaReviews.push(notes[i]);
-        }
-        callback && callback();
+const getMetas = (page) => {
+    return new Promise((resolve) => {
+        console.log(chalk.yellow(`${dataUrl}?${queryString.stringify({ ...metaReviewParams, offset: page * 1000 })}`));
+        curl.get(`${dataUrl}?${queryString.stringify({ ...metaReviewParams, offset: page * 1000 })}`, {}, (e, _, body) => {
+            if (e) {
+                console.log('metareview error: \n', chalk.red(JSON.stringify(e)));
+                return;
+            }
+            console.log(chalk.green(`Page ${page} Meta Review Loaded Successfully`))
+            const { notes = [] } = JSON.parse(body);
+            for (let i = 0; i < notes.length; i++) {
+                const { forum } = notes[i];
+                metaReviews[forum] = notes[i];
+            }
+            resolve && resolve();
+        });
     });
 };
-// 这块儿可以优化下写法
-getMetas(0, () => {
-    getMetas(1, () => {
-        const paramString = queryString.stringify(params)
+
+const getBlindSubs = (page) => {
+    return new Promise((resolve) => {
+        const paramString = queryString.stringify({ ...params, offset: page * 1000 });
         const url = `${dataUrl}?${paramString}`;
-
         console.log(chalk.yellow(`Loading:\n${url}\n\n`));
-
-        curl.get(dataUrl, params, function (e, _, body) {
+        curl.get(url, {}, function (e, _, body) {
             if (e) {
                 console.log('error: \n', chalk.red(JSON.stringify(e)));
                 return;
             }
+            console.log(chalk.green(`Page ${page} Blind Submissions Loaded Successfully`))
             const { notes } = JSON.parse(body);
             // console.log(JSON.stringify(notes, null, 2))
-            let articles = notes.map((note) => {
-                const { content = {} } = note;
+            const articles = notes.map((note) => {
                 const {
                     id,
-                    forum
+                    forum,
+                    content: {
+                        title,
+                        pdf: pdfUrl
+                    } = {}
                 } = note;
-                const {
-                    title,
-                    pdf: pdfUrl
-                } = content;
                 return {
                     id,
                     title,
@@ -91,12 +96,11 @@ getMetas(0, () => {
             articles.forEach(article => {
                 const {
                     id,
+                    forum
                 } = article;
-                const metaReview = metaReviews.find(({ forum }) => {
-                    return forum === id;
-                });
+                const metaReview = metaReviews[id];
+                console.log('blind', id, metaReview)
                 if (!metaReview) {
-                    article.deleted = true;
                     return;
                 }
                 const { content: {
@@ -107,22 +111,37 @@ getMetas(0, () => {
                 } else if (recommendation === 'Accept (Oral)') {
                     article.type = 'oral';
                 }
+                blinds[id] = article;
             });
-            // console.log(articles);
-            const scripts = articles.reduce((pre, cur) => {
-                const {
-                    title,
-                    pdfUrl,
-                    deleted,
-                    type
-                } = cur;
-                if (deleted) {
-                    return pre;
-                }
-                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
-                return pre + sh;
-            }, 'cd pdf\n');
-            fs.writeFileSync(path.resolve(__dirname, "./temp.sh"), scripts);
+            resolve && resolve();
         });
     });
-});
+}
+
+// 这块儿可以优化下写法
+getMetas(0)
+    .then(() => {
+        return getMetas(1);
+    })
+    .then(() => {
+        return getMetas(2);
+    })
+    .then(() => {
+        return getBlindSubs(0);
+    })
+    .then(() => {
+        // console.log(blinds, metaReviews)
+        const scripts = Object.keys(blinds).reduce((pre, cur) => {
+            const {
+                title,
+                pdfUrl,
+                type
+            } = blinds[cur] || {};
+            if (!type || !pdfUrl) {
+                return pre;
+            }
+            const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
+            return pre + sh;
+        }, 'cd pdf\n');
+        fs.writeFileSync(path.resolve(__dirname, "./temp.sh"), scripts);
+    });
