@@ -108,10 +108,11 @@ const getBlindSubs = (page) => {
                 } = {} } = metaReview;
                 if (recommendation === 'Accept (Poster)') {
                     article.type = 'poster';
+                    blinds[id] = article;
                 } else if (recommendation === 'Accept (Oral)') {
                     article.type = 'oral';
+                    blinds[id] = article;
                 }
-                blinds[id] = article;
             });
             resolve && resolve();
         });
