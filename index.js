@@ -168,8 +168,8 @@ getMetas(0)
             downloader.on('close', (code) => {
                 console.log(chalk.green(`<D${i}> finished. code ${code}`));
             });
-            downloader.stderr.on('data', (data) => {
-                console.log(`<D${i}>: ${data}`);
+            downloader.stderr.on('data', (_) => {
+                // console.log(`<D${i}>: ${data}`);
             });
         }
 
