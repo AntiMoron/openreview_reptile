@@ -43,6 +43,7 @@ const metaReviews = [];
 // 拉去meta数据
 const getMetas = (page, callback) => {
     curl.get(dataUrl, { ...metaReviewParams, offset: page * 1000 }, (e, _, body) => {
+        console.log(chalk.green(`Page ${page} Meta Review Loaded Successfully`))
         if (e) {
             console.log('metareview error: \n', chalk.red(JSON.stringify(e)));
             return;
