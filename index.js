@@ -119,7 +119,7 @@ getMetas(0, () => {
                 if (deleted) {
                     return pre;
                 }
-                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}/${title}.pdf"\n`;
+                const sh = `curl ${`https://openreview.net${pdfUrl}`} -o "${type}_${title}.pdf"\n`;
                 return pre + sh;
             }, 'cd pdf\n');
             fs.writeFileSync(path.resolve(__dirname, "./temp.sh"), scripts);
