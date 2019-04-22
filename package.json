@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rm -rf temp.sh && rm -rf pdf && mkdir pdf && node ./index.js"
+    "start": "rm -rf *.sh && mkdir -p pdf && node ./index.js"
   },
   "author": "",
   "license": "ISC",
